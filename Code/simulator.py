@@ -56,7 +56,7 @@ def send_pulses(index):
         with PRINT_LOCK:
             print("Thread num:", index, ", input: ", thread_input)
         requests.post(
-            f"http://{SERVER_IP}:{SERVER_PORT}",
+            f"http://{SERVER_IP}:{SERVER_PORT}/add_data",
             {"input": thread_input, "client num": index})
 
 
