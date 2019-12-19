@@ -12,7 +12,7 @@ import msvcrt
 import requests
 import traceback
 
-SERVER_IP = "192.168.1.21"
+SERVER_IP = "192.168.0.35"
 SERVER_PORT = 5000
 TEST_INFO = None
 TEST_INFO_LOCK = threading.Lock()
