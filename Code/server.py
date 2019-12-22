@@ -13,9 +13,8 @@ FILE_LOCK = threading.Lock()
 
 @app.route('/')
 def root():
-    print("DSdsfdsfdsfd")
     message = "Hello world"
-    return render_template('index.html', rer=message)
+    return render_template('index.html', rer=message, John= 'sag')
 
 
 @app.route('/add_data', methods=["POST"])
@@ -32,5 +31,4 @@ def add_data():
 
 
 if __name__ == "__main__":
-    #app.run(debug=True, host="localhost")
     app.run(debug=True, host="0.0.0.0")
