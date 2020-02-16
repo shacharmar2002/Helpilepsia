@@ -28,10 +28,16 @@ def get_thread_input(thread_number):
 
 def change_thread_input(thread_number):
     with TEST_INFO_LOCK:
-        if TEST_INFO[thread_number] == b"1":
-            TEST_INFO[thread_number] = b"0"
-        else:
+        #print(TEST_INFO[thread_number])
+        if (TEST_INFO[thread_number] == b"0"):
             TEST_INFO[thread_number] = b"1"
+        elif (TEST_INFO[thread_number] == b"1"):
+            TEST_INFO[thread_number] = b"2"
+        elif (TEST_INFO[thread_number] == b"2"):
+            TEST_INFO[thread_number] = b"3"
+        elif (TEST_INFO[thread_number] == b"3"):
+            TEST_INFO[thread_number] = b"0"
+
 
 
 def get_running():
@@ -55,9 +61,26 @@ def send_pulses(index):
         thread_input = get_thread_input(index)
         with PRINT_LOCK:
             print("Thread num:", index, ", input: ", thread_input)
+        data = {}
+        #TO DO-complete thread_input =1,2,3
+        data["input"] = thread_input
+        data["client_num"] = index
+        if(thread_input == b"0"):
+            data["start_time"] = "123"
+            data["position"] = "123"
+        elif(thread_input==b"1" or thread_input==b"2"):
+            data["position"] = "123"
+            data["value"] = "123"
+        elif(thread_input==b"3"):
+            #To Do: add value's history
+            data["history"] = [1, 2, 3]
+
+
+            #{"input": thread_input, "client num": index, "start_time": "123"}
         requests.post(
-            f"http://{SERVER_IP}:{SERVER_PORT}/add_data",
-            {"input": thread_input, "client num": index})
+            f"http://{SERVER_IP}:{SERVER_PORT}/add_data", data)
+        if (thread_input==b"2" or thread_input == b"3"):
+            change_thread_input(index)
 
 
 def start_threads(count):
