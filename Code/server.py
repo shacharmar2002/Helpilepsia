@@ -6,6 +6,7 @@ __author__ = "Shachar"
 
 import threading
 from flask import Flask, request, render_template
+import DAL
 
 app = Flask(__name__)
 FILE_LOCK = threading.Lock()
@@ -37,6 +38,10 @@ def add_data():
     with FILE_LOCK:
         with open("output.txt", "a") as output_file:
             output_file.write(string_by_code(request.form))
+
+    conn = DAL.connect('DBProject.db')
+    DAL.insert_new_event(conn, request.form)
+    DAL.close(conn)
     return "0"
 
 if __name__ == "__main__":
