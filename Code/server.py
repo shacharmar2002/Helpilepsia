@@ -38,9 +38,11 @@ def add_data():
     with FILE_LOCK:
         with open("output.txt", "a") as output_file:
             output_file.write(string_by_code(request.form))
-
+    print(request.form)
+    result = [(d['client_num'], d['position'], d['start_time']) for d in request.form]
+    print (result)
     conn = DAL.connect('DBProject.db')
-    DAL.insert_new_event(conn, request.form)
+    DAL.insert_new_event(conn, result[0])
     DAL.close(conn)
     return "0"
 

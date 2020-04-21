@@ -3,16 +3,9 @@ import sqlite3
 def connect(sqlite_file):
     """ Make connection to an SQLite database file """
     conn = sqlite3.connect(sqlite_file)
-    c = conn.cursor()
-    return conn, c
+    return conn
 
 
-def total_rows(cursor, table_name):
-    """ Returns the total number of rows in the database """
-    cursor.execute('SELECT COUNT(*) FROM {}'.format(table_name))
-    count = cursor.fetchall()
-    print('\nTotal rows: {}'.format(count[0][0]))
-    return count[0][0]
 
 
 def select_all_rows_by_table_name(conn, table_name):
@@ -26,21 +19,17 @@ def select_all_rows_by_table_name(conn, table_name):
 
     #cur.execute('select name from sqlite_master where type = "table"')
     rows = cur.fetchall()
-
-
-    for row in rows:
-        print(row)
+    return(rows)
 
 
 def insert_new_event(conn, params):
 
-    sql = ''' INSERT INTO Events(eventID, patientID, location, event_start_time, event_duration, value)
-              VALUES(?, ?, ?, ?, ?, ?) '''
-
+    sql = ''' INSERT INTO Events(patientID, location, event_start_time, event_duration, value)
+              VALUES(?, ?, ?, ?, ?) '''
+    print(params)
     cur = conn.cursor()
     cur.execute(sql, params)
-    print(cur.lastrowid)
-    return cur.lastrowid
+    conn.commit()
 
 def close(conn):
     """ Commit changes and close connection to the database """
