@@ -11,6 +11,7 @@ import time
 import msvcrt
 import requests
 import traceback
+import datetime
 
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 5000
@@ -34,8 +35,6 @@ def change_thread_input(thread_number):
         elif (TEST_INFO[thread_number] == b"1"):
             TEST_INFO[thread_number] = b"2"
         elif (TEST_INFO[thread_number] == b"2"):
-            TEST_INFO[thread_number] = b"3"
-        elif (TEST_INFO[thread_number] == b"3"):
             TEST_INFO[thread_number] = b"0"
 
 
@@ -64,22 +63,17 @@ def send_pulses(index):
         data = {}
         #TO DO-complete thread_input =1,2,3
         data["input"] = thread_input
-        data["client_num"] = index
-        if(thread_input == b"0"):
-            data["start_time"] = "123"
-            data["position"] = "123"
-        elif(thread_input==b"1" or thread_input==b"2"):
-            data["position"] = "123"
-            data["value"] = "123"
-        elif(thread_input==b"3"):
-            #To Do: add value's history
-            data["history"] = [1, 2, 3]
+        data["client_num"] = "21212123-" + str(index)
+        data["position"] = "123"
+        data["event_time"] = datetime.datetime.now()
+        data["value"] = "123"
+
 
 
             #{"input": thread_input, "client num": index, "start_time": "123"}
         requests.post(
             f"http://{SERVER_IP}:{SERVER_PORT}/add_data", data)
-        if (thread_input==b"2" or thread_input == b"3"):
+        if (thread_input==b"2"):
             change_thread_input(index)
 
 

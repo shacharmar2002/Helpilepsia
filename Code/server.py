@@ -14,14 +14,9 @@ FILE_LOCK = threading.Lock()
 
 def string_by_code(parameters):
     input = parameters['input']
-    str = f"client number {parameters['client_num']}" f" input {input} "
-    if (input=='0'):
-        str += f"start time {parameters['start_time']} " f"position {parameters['position']}"f"\n"
-    elif(input=='1' or input=='2'):
-        str += f"value {parameters['value']} " f"position {parameters['position']}"f"\n"
-    elif(input=='3'):
-        #To Do: send all of the array
-        str+=f"history {parameters['history']}\n"
+    str = f"client number {parameters['client_num']}" f" input {input} " f"position {parameters['position']} "
+    str += f"start time {parameters['event_time']} " f"position {parameters['position']} "
+    str += f"value {parameters['value']} \n"
     return str
 
 @app.route('/')
@@ -38,11 +33,15 @@ def add_data():
     with FILE_LOCK:
         with open("output.txt", "a") as output_file:
             output_file.write(string_by_code(request.form))
-    print(request.form)
-    result = [(d['client_num'], d['position'], d['start_time']) for d in request.form]
-    print (result)
+    input = request.form['input']
+    client_num = request.form['client_num']
+    position = request.form['position']
     conn = DAL.connect('DBProject.db')
-    DAL.insert_new_event(conn, result[0])
+    event_time = request.form['event_time']
+    value = request.form['value']
+    DAL.insert_new_event(conn, client_num, position, event_time, value, input)
+
+
     DAL.close(conn)
     return "0"
 
