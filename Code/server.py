@@ -6,7 +6,7 @@ __author__ = "Shachar"
 
 import threading
 from flask import Flask, request, render_template
-import DAL
+import Code.DAL
 
 app = Flask(__name__)
 FILE_LOCK = threading.Lock()
@@ -24,6 +24,17 @@ def root():
     message = "Hello world"
     return render_template('index.html', rer=message, John= 'sag')
 
+@app.route('/login', methods=['GET', 'POST'])
+def login_root():
+    if request.method == 'POST':
+        conn = Code.DAL.connect('DBProject.db')
+        rows = Code.DAL.login(conn, request.form['username'], request.form['password'])
+        Code.DAL.close(conn)
+        print(rows)
+    elif request.method == 'GET':
+        return render_template('login.html')
+
+
 @app.route('/add_data', methods=["POST"])
 def add_data():
     """
@@ -36,13 +47,12 @@ def add_data():
     input = request.form['input']
     client_num = request.form['client_num']
     position = request.form['position']
-    conn = DAL.connect('DBProject.db')
+    conn = Code.DAL.connect('DBProject.db')
     event_time = request.form['event_time']
     value = request.form['value']
-    DAL.insert_new_event(conn, client_num, position, event_time, value, input)
+    Code.DAL.insert_new_event(conn, client_num, position, event_time, value, input)
 
-
-    DAL.close(conn)
+    Code.DAL.close(conn)
     return "0"
 
 if __name__ == "__main__":
