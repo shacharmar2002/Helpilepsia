@@ -11,6 +11,14 @@ def login(conn, username, password):
     rows = cur.fetchall()
     return rows
 
+def sign_in(conn, username, password):
+    sql = ''' INSERT INTO Patients( patientID, chipID, firstname, lastname, conatctID, username, password)
+                 VALUES(?, ?, ?, ?, ?, ?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, username, password)
+    conn.commit()
+
+
 def get_events_by_user(conn, user_id):
     cur = conn.cursor()
     cur.execute('SELECT * FROM Events WHERE patientID = "{}"'.format(user_id))

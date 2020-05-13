@@ -39,6 +39,23 @@ def logout():
 
     return get_main_page()
 
+@app.route('/sign_in', methods=['GET', 'POST'])
+def sign_in():
+    if request.method == 'POST':
+        conn = DAL.connect('DBProject.db')
+        DAL.sign_in(conn, request.form['username'], request.form['password'])
+        DAL.close(conn)
+        session["patientID"] = None
+        session["chipID"] = None
+        session["firstname"] = None
+        session["lastname"] = None
+        session["contactID"] = None
+        session["username"] = request.form['username']
+        session["password"] = request.form['password']
+        return get_main_page()
+    elif request.method == 'GET':
+        return render_template("sign_in.html")
+
 @app.route('/login', methods=['GET', 'POST'])
 def login_root():
     if request.method == 'POST':
