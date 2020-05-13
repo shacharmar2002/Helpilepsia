@@ -6,11 +6,13 @@
 
 </head>
 <body>
+      <a href = "/">return to main page</a>
+      <br />
         login page
         <form method="post">
             user name<input type="text" name="username">
             password<input type="text" name="password">
-
+        <div style="color: red">{{error}}</div>
             <input type="submit" value="Login">
         </form>
 </body>

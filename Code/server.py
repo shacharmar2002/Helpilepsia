@@ -5,10 +5,12 @@ The server
 __author__ = "Shachar"
 
 import threading
-from flask import Flask, request, render_template
-import Code.DAL
+from flask import Flask, request, render_template, session
+import DAL
+
 
 app = Flask(__name__)
+app.secret_key = "any random string"
 FILE_LOCK = threading.Lock()
 
 
@@ -21,20 +23,42 @@ def string_by_code(parameters):
 
 @app.route('/')
 def root():
-    message = "Hello world"
-    return render_template('index.html', rer=message, John= 'sag')
+    return get_main_page()
+
+@app.route('/logout')
+def logout():
+    session["patientID"] = None
+    session["chipID"] = None
+    session["firstname"] = None
+    session["lastname"] = None
+    session["medical_state"] = None
+    session["location"] = None
+    session["contactID"] = None
+    session["username"] = None
+    session["password"] = None
+
+    return get_main_page()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_root():
     if request.method == 'POST':
-        conn = Code.DAL.connect('DBProject.db')
-        rows = Code.DAL.login(conn, request.form['username'], request.form['password'])
-        Code.DAL.close(conn)
-        print(rows)
+        conn = DAL.connect('DBProject.db')
+        rows = DAL.login(conn, request.form['username'], request.form['password'])
+        DAL.close(conn)
+        if (len(rows) == 0):
+            return render_template('login.html', error = "username or password is invalid")
+        session["patientID"], session["chipID"], session["firstname"], session[
+            "lastname"], session["medical_state"], session["location"],\
+        session["contactID"], session["username"], session["password"] = rows[0]
+        return get_main_page()
     elif request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', error = "")
 
-
+def get_main_page():
+    events = []
+    if (session["patientID"] != None):
+        events = get_events(session["patientID"])
+    return render_template('index.html', events = events)
 @app.route('/add_data', methods=["POST"])
 def add_data():
     """
@@ -47,13 +71,17 @@ def add_data():
     input = request.form['input']
     client_num = request.form['client_num']
     position = request.form['position']
-    conn = Code.DAL.connect('DBProject.db')
+    conn = DAL.connect('DBProject.db')
     event_time = request.form['event_time']
     value = request.form['value']
-    Code.DAL.insert_new_event(conn, client_num, position, event_time, value, input)
+    DAL.insert_new_event(conn, client_num, position, event_time, value, input)
 
-    Code.DAL.close(conn)
+    DAL.close(conn)
     return "0"
-
+def get_events(user_id):
+    conn = DAL.connect('DBProject.db')
+    rows = DAL.get_events_by_user(conn, user_id)
+    DAL.close(conn)
+    return rows
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

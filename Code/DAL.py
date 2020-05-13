@@ -9,7 +9,13 @@ def login(conn, username, password):
     cur = conn.cursor()
     cur.execute('SELECT * FROM Patients WHERE username = "{}" and password = "{}"'.format(username, password))
     rows = cur.fetchall()
-    return (rows)
+    return rows
+
+def get_events_by_user(conn, user_id):
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Events WHERE patientID = "{}"'.format(user_id))
+    rows = cur.fetchall()
+    return rows
 
 
 def select_all_rows_by_table_name(conn, table_name):
