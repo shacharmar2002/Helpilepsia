@@ -1,8 +1,9 @@
+
 """
 The server
 """
 
-__author__ = "Shachar"
+__author__ = "Shaachar"
 
 import threading
 from flask import Flask, request, render_template, session
@@ -21,9 +22,11 @@ def string_by_code(parameters):
     str += f"value {parameters['value']} \n"
     return str
 
+
 @app.route('/')
 def root():
     return get_main_page()
+
 
 @app.route('/logout')
 def logout():
@@ -43,18 +46,22 @@ def logout():
 def sign_in():
     if request.method == 'POST':
         conn = DAL.connect('DBProject.db')
-        DAL.sign_in(conn, request.form['username'], request.form['password'])
+        DAL.sign_in(conn, request.form['patientID'], request.form['chipID'],
+        request.form['firstname'], request.form['lastname'],
+        request.form['contactID'], request.form['username'],
+        request.form['password'])
         DAL.close(conn)
-        session["patientID"] = None
-        session["chipID"] = None
-        session["firstname"] = None
-        session["lastname"] = None
-        session["contactID"] = None
+        session["patientID"] = request.form['patientID']
+        session["chipID"] = request.form['chipID']
+        session["firstname"] = request.form['lastname']
+        session["lastname"] = request.form['contactID']
+        session["contactID"] = request.form['contactID']
         session["username"] = request.form['username']
         session["password"] = request.form['password']
         return get_main_page()
     elif request.method == 'GET':
         return render_template("sign_in.html")
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_root():
@@ -71,11 +78,14 @@ def login_root():
     elif request.method == 'GET':
         return render_template('login.html', error = "")
 
+
 def get_main_page():
     events = []
-    if (session["patientID"] != None):
+    if ("patientID" in session):
         events = get_events(session["patientID"])
-    return render_template('index.html', events = events)
+    return render_template('index.html', events=events)
+
+
 @app.route('/add_data', methods=["POST"])
 def add_data():
     """
@@ -95,10 +105,14 @@ def add_data():
 
     DAL.close(conn)
     return "0"
+
+
 def get_events(user_id):
     conn = DAL.connect('DBProject.db')
     rows = DAL.get_events_by_user(conn, user_id)
     DAL.close(conn)
     return rows
+
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

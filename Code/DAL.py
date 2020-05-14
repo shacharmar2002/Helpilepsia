@@ -11,11 +11,12 @@ def login(conn, username, password):
     rows = cur.fetchall()
     return rows
 
-def sign_in(conn, username, password):
+
+def sign_in(conn, patientID, chipID, firstname, lastname, conatctID, username, password):
     sql = ''' INSERT INTO Patients( patientID, chipID, firstname, lastname, conatctID, username, password)
                  VALUES(?, ?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
-    cur.execute(sql, username, password)
+    cur.execute(sql, patientID, chipID, firstname, lastname, conatctID, username, password)
     conn.commit()
 
 
