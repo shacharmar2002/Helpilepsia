@@ -42,6 +42,27 @@ def logout():
 
     return get_main_page()
 
+
+@app.route('/contact_sign_in', methods=['GET', 'POST'])
+def contact_sign_in():
+    if request.method == 'POST':
+        conn = DAL.connect('DBProject.db')
+        DAL.contact_sign_in(conn, request.form['contactID'],
+                    request.form['firstname'], request.form['lastname'],
+                    request.form['phone'], request.form['patientID'],
+                    request.form['email'])
+        DAL.close(conn)
+        session["contactID"] = request.form['contactID']
+        session["firstname"] = request.form['firstname']
+        session["lastname"] = request.form['lastname']
+        session["phone"] = request.form['phone']
+        session["contactID"] = request.form['contactID']
+        session["email"] = request.form['email']
+        return get_main_page()
+    elif request.method == 'GET':
+        return render_template("contact_sign_in.html")
+
+
 @app.route('/sign_in', methods=['GET', 'POST'])
 def sign_in():
     if request.method == 'POST':
@@ -58,7 +79,7 @@ def sign_in():
         session["contactID"] = request.form['contactID']
         session["username"] = request.form['username']
         session["password"] = request.form['password']
-        return get_main_page()
+        return render_template("contact_sign_in.html")
     elif request.method == 'GET':
         return render_template("sign_in.html")
 
@@ -115,4 +136,4 @@ def get_events(user_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="127.0.0.1")

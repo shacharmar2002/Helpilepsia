@@ -12,11 +12,19 @@ def login(conn, username, password):
     return rows
 
 
-def sign_in(conn, patientID, chipID, firstname, lastname, conatctID, username, password):
+def sign_in(conn, *params):
     sql = ''' INSERT INTO Patients( patientID, chipID, firstname, lastname, conatctID, username, password)
                  VALUES(?, ?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
-    cur.execute(sql, patientID, chipID, firstname, lastname, conatctID, username, password)
+    cur.execute(sql, params)
+    conn.commit()
+
+
+def contact_sign_in(conn, *params):
+    sql = ''' INSERT INTO Contacts(conatctID, firstname, lastname, phone, patientID, email)
+                   VALUES(?, ?, ?, ?, ?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, params)
     conn.commit()
 
 
