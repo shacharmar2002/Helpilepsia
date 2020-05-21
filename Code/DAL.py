@@ -21,7 +21,7 @@ def sign_in(conn, *params):
 
 
 def contact_sign_in(conn, *params):
-    sql = ''' INSERT INTO Contacts(conatctID, firstname, lastname, phone, patientID, email)
+    sql = ''' INSERT INTO Contacts(contactID, firstname, lastname, phone, patientID, email)
                    VALUES(?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
     cur.execute(sql, params)

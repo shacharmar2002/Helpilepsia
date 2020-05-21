@@ -47,11 +47,14 @@ def logout():
 def contact_sign_in():
     if request.method == 'POST':
         conn = DAL.connect('DBProject.db')
-        DAL.contact_sign_in(conn, request.form['contactID'],
+        try:
+            DAL.contact_sign_in(conn, request.form['contactID'],
                     request.form['firstname'], request.form['lastname'],
                     request.form['phone'], request.form['patientID'],
                     request.form['email'])
-        DAL.close(conn)
+        finally:
+            DAL.close(conn)
+
         session["contactID"] = request.form['contactID']
         session["firstname"] = request.form['firstname']
         session["lastname"] = request.form['lastname']
@@ -67,10 +70,14 @@ def contact_sign_in():
 def sign_in():
     if request.method == 'POST':
         conn = DAL.connect('DBProject.db')
-        DAL.sign_in(conn, request.form['patientID'], request.form['chipID'],
-        request.form['firstname'], request.form['lastname'],
-        request.form['contactID'], request.form['username'],
-        request.form['password'])
+        try:
+            DAL.sign_in(conn, request.form['patientID'], request.form['chipID'],
+            request.form['firstname'], request.form['lastname'],
+            request.form['contactID'], request.form['username'],
+            request.form['password'])
+        finally:
+            DAL.close(conn)
+
         DAL.close(conn)
         session["patientID"] = request.form['patientID']
         session["chipID"] = request.form['chipID']
