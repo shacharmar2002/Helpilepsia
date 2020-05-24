@@ -6,23 +6,33 @@
 </head>
 <body>
   <a href="/sign_in">sign in</a>
-  <br />
-  <a href = "/login">login</a>
     {% if (session["firstname"] != None) %}
+  <br />
+   <a href = "/logout">logout</a>
     <p>hello {{session["firstname"]}}</p>
   {% else %}
+  <br />
+  <a href = "/login">login</a>
   <p> hello guest</p>
   {% endif %}
   {% if (events | length != 0) %}
     <table>
+      <tr>
+    <th>{{columns[0]}}</th>
+    <th>{{columns[1]}}</th>
+    <th>{{columns[2]}}</th>
+    <th>{{columns[3]}}</th>
+    <th>{{columns[4]}}</th>
+    <th>{{columns[5]}}</th>
+  </tr>
       {% for row in events %}
-  <tr>
-    <th> {{ row[0] }}</th>
-    <th> {{ row[1] }}</th>
-    <th> {{ row[2] }}</th>
-    <th> {{ row[3] }}</th>
-    <th> {{ row[4] }}</th>
-    <th> {{ row[5] }}</th>
+    <tr>
+    <td> {{ row[0] }}</td>
+    <td> {{ row[1] }}</td>
+    <td> {{ row[2] }}</td>
+    <td> {{ row[3] }}</td>
+    <td> {{ row[4] }}</td>
+    <td> {{ row[5] }}</td>
 
   </tr>
   {% endfor %}

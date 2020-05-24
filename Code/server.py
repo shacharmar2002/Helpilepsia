@@ -1,4 +1,3 @@
-
 """
 The server
 """
@@ -8,7 +7,8 @@ __author__ = "Shaachar"
 import threading
 from flask import Flask, request, render_template, session
 import DAL
-
+import hash_code
+import send_email
 
 app = Flask(__name__)
 app.secret_key = "any random string"
@@ -49,17 +49,18 @@ def contact_sign_in():
         conn = DAL.connect('DBProject.db')
         try:
             DAL.contact_sign_in(conn, request.form['contactID'],
-                    request.form['firstname'], request.form['lastname'],
-                    request.form['phone'], request.form['patientID'],
-                    request.form['email'])
+                                request.form['firstname'],
+                                request.form['lastname'],
+                                request.form['phone'],
+                                session['patientID'],
+                                request.form['email'])
         finally:
             DAL.close(conn)
 
         session["contactID"] = request.form['contactID']
-        session["firstname"] = request.form['firstname']
-        session["lastname"] = request.form['lastname']
+        session["contact_firstname"] = request.form['firstname']
+        session["contact_lastname"] = request.form['lastname']
         session["phone"] = request.form['phone']
-        session["contactID"] = request.form['contactID']
         session["email"] = request.form['email']
         return get_main_page()
     elif request.method == 'GET':
@@ -70,22 +71,24 @@ def contact_sign_in():
 def sign_in():
     if request.method == 'POST':
         conn = DAL.connect('DBProject.db')
+        hash, salt = hash_code.hash_password(request.form['password'])
         try:
-            DAL.sign_in(conn, request.form['patientID'], request.form['chipID'],
-            request.form['firstname'], request.form['lastname'],
-            request.form['contactID'], request.form['username'],
-            request.form['password'])
+            DAL.sign_in(conn, request.form['patientID'],
+                        request.form['chipID'],
+                        request.form['firstname'], request.form['lastname'],
+                        request.form['contactID'], request.form['username'],
+                        hash, salt)
         finally:
             DAL.close(conn)
-
         DAL.close(conn)
         session["patientID"] = request.form['patientID']
         session["chipID"] = request.form['chipID']
-        session["firstname"] = request.form['lastname']
-        session["lastname"] = request.form['contactID']
+        session["firstname"] = request.form['firstname']
+        session["lastname"] = request.form['lastname']
         session["contactID"] = request.form['contactID']
         session["username"] = request.form['username']
-        session["password"] = request.form['password']
+        session["password"] = hash
+        session["salt"] = salt
         return render_template("contact_sign_in.html")
     elif request.method == 'GET':
         return render_template("sign_in.html")
@@ -93,25 +96,40 @@ def sign_in():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_root():
+    rows = []
     if request.method == 'POST':
         conn = DAL.connect('DBProject.db')
-        rows = DAL.login(conn, request.form['username'], request.form['password'])
-        DAL.close(conn)
+        rows = DAL.login(conn, request.form['username'])
         if (len(rows) == 0):
-            return render_template('login.html', error = "username or password is invalid")
-        session["patientID"], session["chipID"], session["firstname"], session[
-            "lastname"], session["medical_state"], session["location"],\
-        session["contactID"], session["username"], session["password"] = rows[0]
+            return render_template('login.html',
+                                   error="username is invalid")
+        patientID, chipID, firstname, lastname, medical_state, location, contactID, username, password, salt = rows[0]
+        if_true = hash_code.verify_password(password,
+                                            salt,
+                                            request.form['password'])
+        DAL.close(conn)
+        if (not if_true):
+            return render_template('login.html',
+                                   error="password is invalid")
+        session["patientID"] = patientID
+        session["chipID"] = chipID
+        session["firstname"] = firstname
+        session["lastname"] = lastname
+        session["contactID"] = contactID
+        session["username"] = username
+        session["password"] = str(hash)
+        session["salt"] = str(salt)
         return get_main_page()
     elif request.method == 'GET':
-        return render_template('login.html', error = "")
+        return render_template('login.html', error="")
 
 
 def get_main_page():
     events = []
+    columns = []
     if ("patientID" in session):
-        events = get_events(session["patientID"])
-    return render_template('index.html', events=events)
+        events, columns = get_events(session["patientID"])
+    return render_template('index.html', events=events, columns=columns)
 
 
 @app.route('/add_data', methods=["POST"])
@@ -132,14 +150,19 @@ def add_data():
     DAL.insert_new_event(conn, client_num, position, event_time, value, input)
 
     DAL.close(conn)
+    #if (input==1):
+        #TO_DO:call function DAL.GET_contact_by_id
+        #if (len(rows) != 0):
+            #patientID, chipID, firstname, lastname, medical_state, location, contactID, username, password, salt = rows[0](change to contact)
+            # TO_DO: call function send_email
     return "0"
 
 
 def get_events(user_id):
     conn = DAL.connect('DBProject.db')
-    rows = DAL.get_events_by_user(conn, user_id)
+    rows, columms = DAL.get_events_by_user(conn, user_id)
     DAL.close(conn)
-    return rows
+    return rows, columms
 
 
 if __name__ == "__main__":

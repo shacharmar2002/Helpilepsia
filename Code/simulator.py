@@ -55,6 +55,7 @@ def send_pulses(index):
     Sends a "pulse" (number) through a socket until server closes.
     :param index: The index of the information to send.
     """
+    arr = ["212839682", "12345678", "21232312"]
     while get_running():
         time.sleep(1)
         thread_input = get_thread_input(index)
@@ -63,7 +64,7 @@ def send_pulses(index):
         data = {}
         #TO DO-complete thread_input =1,2,3
         data["input"] = thread_input
-        data["client_num"] = "21212123-" + str(index)
+        data["client_num"] = arr[index%3]
         data["position"] = "123"
         data["event_time"] = datetime.datetime.now()
         data["value"] = "123"
