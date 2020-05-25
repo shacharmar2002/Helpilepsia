@@ -12,6 +12,7 @@ import msvcrt
 import requests
 import traceback
 import datetime
+import DAL
 
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 5000
@@ -55,7 +56,10 @@ def send_pulses(index):
     Sends a "pulse" (number) through a socket until server closes.
     :param index: The index of the information to send.
     """
-    arr = ["212839682", "12345678", "21232312"]
+    path = str(DAL.__file__[:-7])
+    conn = DAL.connect(path + r'\DBProject.db')
+    patients = [item[0] for item in DAL.get_patient(conn)]
+
     while get_running():
         time.sleep(1)
         thread_input = get_thread_input(index)
@@ -64,7 +68,7 @@ def send_pulses(index):
         data = {}
         #TO DO-complete thread_input =1,2,3
         data["input"] = thread_input
-        data["client_num"] = arr[index%3]
+        data["client_num"] = patients[index]
         data["position"] = "123"
         data["event_time"] = datetime.datetime.now()
         data["value"] = "123"

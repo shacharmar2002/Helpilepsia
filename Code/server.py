@@ -149,17 +149,15 @@ def add_data():
     event_time = request.form['event_time']
     value = request.form['value']
     DAL.insert_new_event(conn, client_num, position, event_time, value, input)
-
     if (input == "1"):
         rows = DAL.GET_contact_by_id(conn, client_num)
-        
         if (len(rows) != 0):
-            contactID, contact_firstname, contact_lastname, phone, patientID, email = \
-                rows[0]
-            subject = "Epileptic Seizure Alert"
-            text = "hello " + contact_firstname + ", your relative is having an epileptic seizure in this landmarks please send him help:" + position
-            message = 'Subject: {}\n\n{}'.format(subject, text)
-            send_email.send_email(email, message)
+            for row in rows:
+                contactID, contact_firstname, contact_lastname, phone, patientID, email = row
+                subject = "Epileptic Seizure Alert"
+                text = "hello " + contact_firstname + ", your relative is having an epileptic seizure in this landmarks please send him help:" + position
+                message = 'Subject: {}\n\n{}'.format(subject, text)
+                send_email.send_email(email, message)
         DAL.close(conn)
 
     DAL.close(conn)

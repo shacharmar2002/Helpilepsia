@@ -16,6 +16,22 @@ def login(conn, username):
     return rows
 
 
+def get_contacts_by_patient(conn, patientID):
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT conatctID FROM Patients WHERE patientID = "{}"'.format(
+            patientID))
+    rows = cur.fetchall()
+    return rows
+
+
+def get_patient(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT patientID FROM Patients;')
+    rows = cur.fetchall()
+    return rows
+
+
 def GET_contact_by_id(conn, patientID):
     cur = conn.cursor()
     cur.execute(
