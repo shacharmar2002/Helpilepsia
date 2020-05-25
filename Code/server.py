@@ -152,11 +152,16 @@ def add_data():
 
     if (input == "1"):
         rows = DAL.GET_contact_by_id(conn, client_num)
+        
         if (len(rows) != 0):
             contactID, contact_firstname, contact_lastname, phone, patientID, email = \
                 rows[0]
-            send_email.send_email(email,
-                                  "hello " + contact_firstname + " your relative is having an epileptic seizure in this landmarks please send him help:" + position)
+            subject = "Epileptic Seizure Alert"
+            text = "hello " + contact_firstname + ", your relative is having an epileptic seizure in this landmarks please send him help:" + position
+            message = 'Subject: {}\n\n{}'.format(subject, text)
+            send_email.send_email(email, message)
+        DAL.close(conn)
+
     DAL.close(conn)
     return "0"
 
