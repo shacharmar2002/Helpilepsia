@@ -30,11 +30,11 @@ def get_thread_input(thread_number):
 def change_thread_input(thread_number):
     with TEST_INFO_LOCK:
         #print(TEST_INFO[thread_number])
-        if (TEST_INFO[thread_number] == b"0"):
+        if TEST_INFO[thread_number] == b"0":
             TEST_INFO[thread_number] = b"1"
-        elif (TEST_INFO[thread_number] == b"1"):
+        elif TEST_INFO[thread_number] == b"1":
             TEST_INFO[thread_number] = b"2"
-        elif (TEST_INFO[thread_number] == b"2"):
+        elif TEST_INFO[thread_number] == b"2":
             TEST_INFO[thread_number] = b"0"
 
 

@@ -103,7 +103,8 @@ def login_root():
         if (len(rows) == 0):
             return render_template('login.html',
                                    error="username is invalid")
-        patientID, chipID, firstname, lastname, medical_state, location, contactID, username, password, salt = rows[0]
+        patientID, chipID, firstname, lastname, medical_state, location, contactID, username, password, salt = \
+            rows[0]
         if_true = hash_code.verify_password(password,
                                             salt,
                                             request.form['password'])
@@ -149,12 +150,14 @@ def add_data():
     value = request.form['value']
     DAL.insert_new_event(conn, client_num, position, event_time, value, input)
 
+    if (input == "1"):
+        rows = DAL.GET_contact_by_id(conn, client_num)
+        if (len(rows) != 0):
+            contactID, contact_firstname, contact_lastname, phone, patientID, email = \
+                rows[0]
+            send_email.send_email(email,
+                                  "hello " + contact_firstname + " your relative is having an epileptic seizure in this landmarks please send him help:" + position)
     DAL.close(conn)
-    #if (input==1):
-        #TO_DO:call function DAL.GET_contact_by_id
-        #if (len(rows) != 0):
-            #patientID, chipID, firstname, lastname, medical_state, location, contactID, username, password, salt = rows[0](change to contact)
-            # TO_DO: call function send_email
     return "0"
 
 

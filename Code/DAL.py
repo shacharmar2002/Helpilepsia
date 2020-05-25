@@ -16,7 +16,22 @@ def login(conn, username):
     return rows
 
 
-#TO_DO: copy login function and change by id and from contacts table
+def GET_contact_by_id(conn, patientID):
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT * FROM Contacts WHERE patientID = "{}"'.format(
+            patientID))
+    rows = cur.fetchall()
+    return rows
+
+
+def GET_patients_by_id(conn, patientID):
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT * FROM Patients WHERE username = "{}"'.format(
+            patientID))
+    rows = cur.fetchall()
+    return rows
 
 
 def sign_in(conn, *params):
